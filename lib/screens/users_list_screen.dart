@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api_integration_app/screens/user_profile_screen.dart';
 
 import '../models/user_model.dart';
+import '../services/api_service.dart';
 
 class UsersListScreen extends StatefulWidget {
   const UsersListScreen({super.key});
@@ -15,6 +17,7 @@ class _UsersListScreenState extends State<UsersListScreen> {
   @override
   void initState() {
     super.initState();
+    usersFuture = ApiService.fetchUsers();
   }
 
   @override
@@ -44,7 +47,12 @@ class _UsersListScreenState extends State<UsersListScreen> {
                 title: Text(user.name),
                 subtitle: Text(user.email),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute());
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserProfileScreen(user: user),
+                    ),
+                  );
                 },
               );
             },
