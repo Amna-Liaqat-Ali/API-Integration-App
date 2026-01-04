@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api_integration_app/screens/user_profile_screen.dart';
 
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 
-class UsersListScreen extends StatefulWidget {
-  const UsersListScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<UsersListScreen> createState() => _UsersListScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _UsersListScreenState extends State<UsersListScreen> {
-  late Future<List<UserModel>> usersFuture;
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<UserModel>> _users;
 
   @override
   void initState() {
     super.initState();
-    usersFuture = UserApiService.fetchUsers();
+    _users = UserApiService.fetchUsers();
   }
 
   @override
@@ -25,35 +24,27 @@ class _UsersListScreenState extends State<UsersListScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Users')),
       body: FutureBuilder<List<UserModel>>(
-        future: usersFuture,
+        future: _users,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return const Center(child: Text('Error loading users'));
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No users found'));
           }
 
           final users = snapshot.data!;
-
           return ListView.builder(
             itemCount: users.length,
             itemBuilder: (context, index) {
               final user = users[index];
-
               return ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.person)),
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(user.profilePicture),
+                ),
                 title: Text(user.name),
                 subtitle: Text(user.email),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserProfileScreen(user: user),
-                    ),
-                  );
-                },
               );
             },
           );

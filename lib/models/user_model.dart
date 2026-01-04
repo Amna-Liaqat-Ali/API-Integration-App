@@ -1,11 +1,19 @@
 class UserModel {
-  final int id;
   final String name;
   final String email;
+  final String profilePicture;
 
-  UserModel({required this.id, required this.name, required this.email});
+  UserModel({
+    required this.name,
+    required this.email,
+    required this.profilePicture,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(id: json['id'], name: json['name'], email: json['email']);
+    return UserModel(
+      name: json['name'] ?? 'No Name',
+      email: json['email'] ?? 'No Email',
+      profilePicture: 'https://i.pravatar.cc/150?img=${json['id'] ?? 1}',
+    );
   }
 }
